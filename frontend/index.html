@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./css/kendo.common-material.min.css">
+    <link rel="stylesheet" href="./css/kendo.material.min.css">
+    <link rel="stylesheet" href="./css/uikit.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>圖書館</title>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <h1 class="navbar-title text-center">圖書管理系統</h1>
+        </nav>
+    </header>
+    <main>
+        <div class="uk-container align-center">
+            <div class="uk-card uk-width-1-3 uk-text-left">
+                <ul class="fieldlist">
+                    <li>
+                        <img class="book-image" src="image/database.jpg" alt="">
+                    </li>
+                    <li>
+                        <label>圖書類別</label>
+                        <select id="book_category" style="width: 100%;">
+                        </select>
+                    </li>
+                    <li>
+                        <label>書名</label>
+                        <input id="book_name" type="text" class="k-textbox" style="width: 100%;" />
+                    </li>
+                    <li>
+                        <label>作者</label>
+                        <input id="book_author" type="text" class="k-textbox" style="width: 100%;" />
+                    </li>
+                    <li>
+                        <label>購買日期</label>
+                        <input id="bought_datepicker" value="10/10/2011" title="datepicker" style="width: 100%" />
+                        <!-- <input type="text" class="k-textbox" style="width: 100%;" /> -->
+                    </li>
+                    <li class="uk-text-right">
+                        <button class="k-button k-primary btn-add-book">新增</button>
+                    </li>
+                </ul>
+            </div>
+            <div id="book_grid">
+            </div>
+        </div>
+        
+    </main>
+
+    <footer>
+    </footer>
+</body>
+<script type="text/javascript" src="data/book-data.js"></script>
+<script src="./js/jquery-2.1.4.min.js"></script>
+<script src="./js/kendo.all.min.js"></script>
+<script src="./js/uikit.min.js"></script>
+<script src="./js/script.js"></script>
+</html>
