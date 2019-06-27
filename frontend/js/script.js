@@ -46,9 +46,10 @@ $(function(){
 		},
 		columns: [
 			{ field: "BookId", title: "書籍編號",width:"10%"},
-			{ field: "BookName", title: "書籍名稱", width: "50%" },
+			{ field: "BookName", title: "書籍名稱", width: "40%" },
 			{ field: "BookCategory", title: "書籍種類", width: "10%" },
 			{ field: "BookAuthor", title: "作者", width: "15%" },
+			{ field: "BookPublisher", title: "出版社", width: "15%" },
 			{ field: "BookBoughtDate", title: "購買日期", width: "15%" },
 			{ command: { text: "刪除", click: deleteBook }, title: " ", width: "120px" }
 		]
