@@ -1,6 +1,7 @@
 
 var bookDataFromLocalStorage = [];
 var maxn = 0;
+var validator;
 
 $(function(){
 	loadBookData();
@@ -53,25 +54,48 @@ $(function(){
 		]
 		
 	}).find('.book-grid-search').on('input propertychange', function(e){
-		e.kendoAutoComplete({})
-	})
+		$("#book_grid").data('kendoGrid').dataSource.filter({
+			logic: "or",
+			filters: [
+				{
+					field: "BookName",
+					operator: "contains",
+					value: $('.book-grid-search').val()
+				}]
+		});
+	});
+	$("#window").kendoWindow({
+		title: "新增書籍",
+		width: "450px",
+		visible: false,
+		action: ["Close"]
+	});
+
+	// kendo validator
+	validator = $("#window").kendoValidator().data("kendoValidator");
 });
 
 // add book
-$('.btn-add-book').click(function(){
-	// add book info to list
-	var data = {
-		"BookId" : ++maxn,
-		"BookCategory" : $('#book_category').data('kendoDropDownList').text(),
-		"BookName" : $('#book_name').val(),
-		"BookAuthor" : $('#book_author').val(),
-		"BookBoughtDate" : kendo.toString($('#bought_datepicker').data('kendoDatePicker').value(), "yyyy-MM-dd"),
-		"BookPublisher" : "NULL"
+$('#add_bk').click(function(e){
+	if(validator.validate())
+	{
+		var data = {
+			"BookId" : ++maxn,
+			"BookCategory" : $('#book_category').data('kendoDropDownList').text(),
+			"BookName" : $('#book_name').val(),
+			"BookAuthor" : $('#book_author').val(),
+			"BookPublisher" : $('#book_publisher').val(),
+			"BookBoughtDate" : kendo.toString($('#bought_datepicker').data('kendoDatePicker').value(), "yyyy-MM-dd")
+		}
+		console.log(data);
+		bookDataFromLocalStorage.push(data);
+		localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage);
+		$("#book_grid").data('kendoGrid').dataSource.data(bookDataFromLocalStorage);
 	}
-	console.log(maxn);
-	bookDataFromLocalStorage.push(data);
-	localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage);
-	$("#book_grid").data('kendoGrid').dataSource.data(bookDataFromLocalStorage);
+});
+
+$('#overmydeadbody').click(function(){
+	$('#window').data("kendoWindow").center().open();
 });
 
 // From ./data/book-data.js load book-info source to LocalStorage
@@ -85,7 +109,7 @@ function loadBookData(){
 
 // DropDownList changing
 function onChange(){
-	$('.book-image').attr('src', $("#book_category").val());
+	$('#bk_img').attr('src', $("#book_category").val());
 }
 
 // delete book
@@ -97,7 +121,10 @@ function deleteBook(e){
 	$("#book_grid").data('kendoGrid').dataSource.data(bookDataFromLocalStorage);
 }
 
-// ------
+
+
+
+// --------------------------------------------------
 
 // binary search
 function binSrchMax(l, r)
