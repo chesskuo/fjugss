@@ -94,7 +94,7 @@ $('#add_bk').click(function(e){
 		$('#book_publisher').val('');
 		bookDataFromLocalStorage.push(data);
 		localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage);
-		$("#book_grid").data('kendoGrid').dataSource.data(bookDataFromLocalStorage);
+		$("#book_grid").data('kendoGrid').dataSource.read();
 	}
 });
 
@@ -122,7 +122,7 @@ function deleteBook(e){
 	var idx = binSrchId(0, bookDataFromLocalStorage.length-1, id)
 	bookDataFromLocalStorage.splice(idx, 1);
 	localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage);
-	$("#book_grid").data('kendoGrid').dataSource.data(bookDataFromLocalStorage);
+	$("#book_grid").data('kendoGrid').dataSource.read();
 }
 
 
