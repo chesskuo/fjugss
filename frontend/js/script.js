@@ -88,7 +88,10 @@ $('#add_bk').click(function(e){
 			"BookPublisher" : $('#book_publisher').val(),
 			"BookBoughtDate" : kendo.toString($('#bought_datepicker').data('kendoDatePicker').value(), "yyyy-MM-dd")
 		}
-		console.log(data);
+		$('#window').data("kendoWindow").close();
+		$('#book_name').val('');
+		$('#book_author').val('');
+		$('#book_publisher').val('');
 		bookDataFromLocalStorage.push(data);
 		localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage);
 		$("#book_grid").data('kendoGrid').dataSource.data(bookDataFromLocalStorage);
