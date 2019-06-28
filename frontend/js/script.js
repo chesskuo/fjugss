@@ -57,13 +57,29 @@ $(function(){
 		]
 		
 	}).find('.book-grid-search').on('input propertychange', function(e){
+		var val = $('.book-grid-search').val();
 		$("#book_grid").data('kendoGrid').dataSource.filter({
 			logic: "or",
 			filters: [
 				{
 					field: "BookName",
 					operator: "contains",
-					value: $('.book-grid-search').val()
+					value: val
+				},
+				{
+					field: "BookCategory",
+					operator: "contains",
+					value: val
+				},
+				{
+					field: "BookAuthor",
+					operator: "contains",
+					value: val
+				},
+				{
+					field: "BookPublisher",
+					operator: "contains",
+					value: val
 				}]
 		});
 	});
