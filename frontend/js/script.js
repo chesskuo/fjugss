@@ -5,7 +5,7 @@ var validator;
 
 $(function(){
 	loadBookData();
-	maxn = binSrchMax(0, bookDataFromLocalStorage.length-1);
+	maxn = binSrchMax(0, bookDataFromLocalStorage.length-1); // find now maximum book id
 	var data = [
 		{text:"資料庫",value:"image/database.jpg"},
 		{text:"網際網路",value:"image/internet.jpg"},
@@ -107,12 +107,14 @@ $('#add_bk').click(function(e){
 			"BookBoughtDate" : kendo.toString($('#bought_datepicker').data('kendoDatePicker').value(), "yyyy-MM-dd")
 		}
 		$('#window').data("kendoWindow").close();
+		bookDataFromLocalStorage.push(data);
+		localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage); // write back localstorage
+		$("#book_grid").data('kendoGrid').dataSource.read(); // refresh grid
+
+		// clear input
 		$('#book_name').val('');
 		$('#book_author').val('');
 		$('#book_publisher').val('');
-		bookDataFromLocalStorage.push(data);
-		localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage);
-		$("#book_grid").data('kendoGrid').dataSource.read();
 	}
 });
 
@@ -136,11 +138,11 @@ function onChange(){
 
 // delete book
 function deleteBook(e){
-	var id = this.dataItem($(e.currentTarget).closest("tr")).BookId;
-	var idx = binSrchId(0, bookDataFromLocalStorage.length-1, id)
-	bookDataFromLocalStorage.splice(idx, 1);
-	localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage);
-	$("#book_grid").data('kendoGrid').dataSource.read();
+	var id = this.dataItem($(e.currentTarget).closest("tr")).BookId; // find the delete id
+	var idx = binSrchId(0, bookDataFromLocalStorage.length-1, id);
+	bookDataFromLocalStorage.splice(idx, 1); // find target in the list to delete
+	localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage); // write back localstorage
+	$("#book_grid").data('kendoGrid').dataSource.read(); // refresh grid
 }
 
 
@@ -149,6 +151,7 @@ function deleteBook(e){
 // --------------------------------------------------
 
 // binary search
+
 function binSrchMax(l, r)
 {
 	if(l == r) return bookDataFromLocalStorage[l].BookId;
@@ -158,7 +161,7 @@ function binSrchMax(l, r)
 	return (lm > rm ? lm : rm);
 }
 
-function binSrchId(l, r, t)
+function binSrchId(l, r, t) // t : target id
 {
 	if(l == r) return (bookDataFromLocalStorage[l].BookId == t ? l : -1);
 	var mid = Math.floor((l+r) / 2);
