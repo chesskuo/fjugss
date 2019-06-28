@@ -11,7 +11,9 @@ $(function(){
 		{text:"網際網路",value:"image/internet.jpg"},
 		{text:"應用系統整合",value:"image/system.jpg"},
 		{text:"家庭保健",value:"image/home.jpg"},
-		{text:"語言",value:"image/language.jpg"}
+		{text:"語言",value:"image/language.jpg"},
+		{text:"行銷",value:"image/gss.png"},
+		{text:"管理",value:"image/manage.png"}
 	]
 	$("#book_category").kendoDropDownList({
 		dataTextField: "text",
