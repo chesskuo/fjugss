@@ -5,7 +5,7 @@ var validator;
 
 $(function(){
 	loadBookData();
-	maxn = binSrchMax(0, bookDataFromLocalStorage.length-1);
+	maxn = binarySearchMax(0, bookDataFromLocalStorage.length-1);
 	var data = [
 		{text:"資料庫",value:"image/database.jpg"},
 		{text:"網際網路",value:"image/internet.jpg"},
@@ -20,7 +20,7 @@ $(function(){
 		dataValueField: "value",
 		dataSource: data,
 		index: 0,
-		change: onChange
+		change: DropDownListonChange
 	});
 	$("#bought_datepicker").kendoDatePicker({value: new Date(), format: "yyyy-MM-dd"});
 	$("#book_grid").kendoGrid({
@@ -130,14 +130,14 @@ function loadBookData(){
 }
 
 // DropDownList changing
-function onChange(){
+function DropDownListonChange(){
 	$('#bk_img').attr('src', $("#book_category").val());
 }
 
 // delete book
 function deleteBook(e){
 	var id = this.dataItem($(e.currentTarget).closest("tr")).BookId;
-	var idx = binSrchId(0, bookDataFromLocalStorage.length-1, id)
+	var idx = binarySearchId(0, bookDataFromLocalStorage.length-1, id)
 	bookDataFromLocalStorage.splice(idx, 1);
 	localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage);
 	$("#book_grid").data('kendoGrid').dataSource.read();
@@ -149,20 +149,20 @@ function deleteBook(e){
 // --------------------------------------------------
 
 // binary search
-function binSrchMax(l, r)
+function binarySearchMax(l, r)
 {
 	if(l == r) return bookDataFromLocalStorage[l].BookId;
 	var mid = Math.floor((l+r) / 2);
-	var lm = binSrchMax(l, mid);
-	var rm = binSrchMax(mid+1, r);
+	var lm = binarySearchMax(l, mid);
+	var rm = binarySearchMax(mid+1, r);
 	return (lm > rm ? lm : rm);
 }
 
-function binSrchId(l, r, t)
+function binarySearchId(l, r, t)
 {
 	if(l == r) return (bookDataFromLocalStorage[l].BookId == t ? l : -1);
 	var mid = Math.floor((l+r) / 2);
-	var lm = binSrchId(l, mid, t);
-	var rm = binSrchId(mid+1, r, t);
+	var lm = binarySearchId(l, mid, t);
+	var rm = binarySearchId(mid+1, r, t);
 	return (lm == -1 ? rm : lm);
 }
