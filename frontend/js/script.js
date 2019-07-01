@@ -87,6 +87,7 @@ $(function(){
 		title: "新增書籍",
 		width: "450px",
 		visible: false,
+		modal: true,
 		action: ["Close"]
 	});
 
