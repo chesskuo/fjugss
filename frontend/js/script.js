@@ -138,11 +138,14 @@ function DropDownListonChange(){
 
 // delete book
 function deleteBook(e){
-	var id = this.dataItem($(e.currentTarget).closest("tr")).BookId; // find the delete id
-	var idx = binarySearchId(0, bookDataFromLocalStorage.length-1, id);
-	bookDataFromLocalStorage.splice(idx, 1); // find target in the list to delete
-	localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage); // write back localstorage
-	$("#book_grid").data('kendoGrid').dataSource.read(); // refresh grid
+	if(confirm("確定要刪除該筆資料嗎?"))
+	{
+		var id = this.dataItem($(e.currentTarget).closest("tr")).BookId; // find the delete id
+		var idx = binarySearchId(0, bookDataFromLocalStorage.length-1, id);
+		bookDataFromLocalStorage.splice(idx, 1); // find target in the list to delete
+		localStorage['bookData'] = JSON.stringify(bookDataFromLocalStorage); // write back localstorage
+		$("#book_grid").data('kendoGrid').dataSource.read(); // refresh grid
+	}
 }
 
 
