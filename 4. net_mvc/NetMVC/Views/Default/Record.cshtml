@@ -1,0 +1,31 @@
+﻿
+@{
+    ViewBag.Title = "Record";
+}
+
+<h2>Record</h2>
+
+@if (ViewBag.RecordResult != null)
+{
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>借閱日期</th>
+                <th>借閱人編號</th>
+                <th>英文姓名</th>
+                <th>中文姓名</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in (List<NetMVC.Models.Record>)ViewBag.RecordResult)
+            {
+                <tr id='@item.KeeperId'>
+                    <td>@item.LendDate</td>
+                    <td>@item.KeeperId</td>
+                    <td>@item.KeeperEName</td>
+                    <td>@item.KeeperCName</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

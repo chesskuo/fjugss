@@ -1,0 +1,272 @@
+﻿
+@{
+    ViewBag.Title = "EditBookPage";
+}
+
+<h2>修改畫面</h2>
+
+<table class="table table-bordered table-striped" id="EditTable">
+    <tr>
+        <td style="text-align: right"><span class="redstart">*</span>書名</td>
+        <td><input id="BookName" name="BookName" required></td>
+    </tr>
+    <tr>
+        <td style="text-align: right"><span class="redstart">*</span>作者</td>
+        <td><input id="Author" name="Author" required></td>
+    </tr>
+    <tr>
+        <td style="text-align: right"><span class="redstart">*</span>出版商</td>
+        <td><input id="Publisher" name="Publisher" required></td>
+    </tr>
+    <tr>
+        <td style="text-align: right">*內容簡介</td>
+        <td><textarea id="Introduction" name="Introduction" style="height: 200px; width: 500px;" required></textarea></td>
+    </tr>
+    <tr>
+        <td style="text-align: right"><span class="redstart">*</span>購書日期</td>
+        <td><input id="BuyDate" name="BuyDate" required></td>
+    </tr>
+    <tr>
+        <td style="text-align: right"><span class="redstart">*</span>圖書類別</td>
+        <td><select id="BookClass" name="BookClass" required></select></td>
+    </tr>
+    <tr>
+        <td style="text-align: right"><span class="redstart">*</span>借閱狀態</td>
+        <td><select id="BookStatus" name="BookStatus" required></select></td>
+    </tr>
+    <tr id="keeper-tr">
+        <td style="text-align: right"><span class="redstart">*</span>借閱人</td>
+        <td><select id="Keeper"></select></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td>
+            <button class="btn btn-danger" id="delete-btn" type="button" style="margin-left: 80%;">刪除</button>
+            <button class="btn btn-default" id="save" type="button">存檔</button>
+        </td>
+    </tr>
+</table>
+
+<input id="hideBookId" type="hidden" value=@ViewData["BookId"] />
+
+<a href="/Library/Index">Back to List</a>
+
+<script>
+    var originBookStatus;
+    var validator;
+
+    $(function () {
+        // buy date
+        $('#BuyDate').kendoDatePicker({ value: new Date(), format: "yyyy/MM/dd" });
+
+        // class
+        $("#BookClass").kendoDropDownList({
+            dataSource: {
+                transport: {
+                    read: {
+                        method: "post",
+                        url: "GetDropDownList",
+                        dataType: "json",
+                        data: {
+                            "type": "class",
+                            "mode": true
+                        }
+                    }
+
+                }
+            },
+            dataTextField: "Text",
+            dataValueField: "Value",
+            index: 0
+        });
+
+
+
+        // keeper
+        $("#Keeper").kendoDropDownList({
+            dataSource: {
+                transport: {
+                    read: {
+                        method: "post",
+                        url: "GetDropDownList",
+                        dataType: "json",
+                        data: {
+                            "type": "keeper",
+                            "mode": true
+                        }
+                    }
+
+                }
+            },
+            dataTextField: "Text",
+            dataValueField: "Value",
+            index: 0
+        });
+
+        // status
+        $("#BookStatus").kendoDropDownList({
+            dataSource: {
+                transport: {
+                    read: {
+                        method: "post",
+                        url: "GetDropDownList",
+                        dataType: "json",
+                        data: {
+                            "type": "status",
+                            "mode": true
+                        }
+                    }
+
+                }
+            },
+            dataTextField: "Text",
+            dataValueField: "Value",
+            index: 0
+        });
+
+        // Get Origin Data
+        $.ajax({
+            method: "post",
+            url: "EditBookInfo",
+            dataType: "json",
+            data: { "BookId": $('#hideBookId').val() },
+            success: function (res) {
+                $('#BookName').val(res.BookName);
+                $('#Author').val(res.Author);
+                $('#Publisher').val(res.Publisher);
+                $('#Introduction').val(res.Introduction);
+                $('#BuyDate').data('kendoDatePicker').value(res.BuyDate);
+                $('#BookClass').data('kendoDropDownList').value(res.BookClassId);
+                $('#BookStatus').data('kendoDropDownList').value(res.BookStatusId);
+                $('#Keeper').data('kendoDropDownList').value(res.KeeperId);
+
+                originBookStatus = res.BookStatusId;
+
+                if (originBookStatus == "A" || originBookStatus == "U" || originBookStatus == "") {
+                    $('#keeper-tr').hide();
+                    $('#KeeperId').val("");
+                }
+                else {
+                    $('#Keeper').attr("required", "true");
+                }
+            }
+        });
+
+        $('#BookName').val(htmlencode($('#BookName').val()));
+        $('#Author').val(htmlencode($('#Author').val()));
+        $('#Publisher').val(htmlencode($('#Publisher').val()));
+        $('#Introduction').val(htmlencode($('#Introduction').val()));
+
+        // hide keeper if cannot borrow
+        $('#BookStatus').change(function () {
+            var tmp = $('#BookStatus').val();
+            if (tmp == "A" || tmp == "U" || tmp == "") {
+                $('#keeper-tr').hide();
+                $('#KeeperId').val("");
+                $('#Keeper').removeAttr("required");
+            }
+            else {
+                $('#Keeper').attr("required", "true");
+                $('#keeper-tr').show();
+            }
+        });
+
+        validator = $("#EditTable").kendoValidator().data("kendoValidator");
+        validator2 = $("#BuyDate").kendoValidator({
+            rules: {
+                dateValidation: function (e) {
+                    var currentDate = kendo.parseDate($(e).val(), "yyyy/MM/dd");
+                    if (!currentDate) {
+                        return false;
+                    }
+                    return true;
+                }
+            },
+            messages: {
+                dateValidation: "Invalid Date!"
+            }
+        }).data("kendoValidator");
+    });
+
+    // Delete Book
+    $('#delete-btn').click(function () {
+        if (confirm("確定要刪除這本書?")) {
+            if (originBookStatus == "B" || originBookStatus == "C") {
+                alert("該本書借出中無法刪除!");
+            }
+            else {
+                $.ajax({
+                    method: "post",
+                    url: "DeleteBook",
+                    dataType: "json",
+                    data: { "BookId": $('#hideBook').val() }
+                }).done(function (e) {
+                    if (e) {
+                        alert("刪除成功! 返回主頁");
+                        location.href = "/Library/Index";
+                    }
+                });
+            }
+        }
+    });
+
+    // Save
+    $('#save').click(function () {
+        var tmp = $('#BookStatus').val();
+        if (tmp == "A" || tmp == "U" || tmp == "") {
+            $('#Keeper').removeAttr("required");
+            $('#KeeperId').val("");
+        }
+
+        if (validator.validate() && validator2.validate()) {
+            if ($('#Introduction').val().length > 1000)
+            {
+                alert("內容簡介太多字了!");
+                return;
+            }
+            var data = {
+                "BookId": $('#hideBookId').val(),
+                "BookName": $('#BookName').val(),
+                "Author": $('#Author').val(),
+                "Publisher": $('#Publisher').val(),
+                "Introduction": $('#Introduction').val(),
+                "BuyDate": kendo.toString($('#BuyDate').data('kendoDatePicker').value(), "yyyy/MM/dd"),
+                "BookClassId": $('#BookClass').val(),
+                "BookStatusId": $('#BookStatus').val(),
+                "KeeperId": $('#Keeper').val(),
+                "ModDate": kendo.toString(new Date(), "yyyy/MM/dd")
+            };
+            $.ajax({
+                method: "post",
+                url: "UpdateBook",
+                dataType: "json",
+                data: data,
+                success: function (res) {
+                    if (res) {
+                        alert("修改成功! 返回主頁");
+                        location.href = "/Library/Index";
+                    }
+                }
+            });
+        }
+    });
+
+
+    // filter
+    function htmlencode(str) {
+        str = str.replace(/(<BR>)|(<P>)/g, '\n');
+        str = str.replace(/</g, '&lt;');
+        str = str.replace(/>/g, '&gt;');
+        return str;
+    }
+</script>
+
+<style>
+    .redstart {
+        color: red;
+    }
+</style>

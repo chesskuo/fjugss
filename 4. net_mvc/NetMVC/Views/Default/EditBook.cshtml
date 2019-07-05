@@ -1,0 +1,137 @@
+﻿@model NetMVC.Models.Book
+
+@{
+    ViewBag.Title = "EditBook";
+}
+
+<h2>EditBook</h2>
+
+@if (ViewBag.EditResult != null)
+{
+    using (Html.BeginForm("UpdateBook", "Default", FormMethod.Post, new { id = "UpdateBook" }))
+    {
+        <table class="table table-bordered table-striped" id="UpdateBookArg" style="width: 80%">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            <tr>
+                <th style="text-align: right;">*@Html.LabelFor(model => model.BookName)</th>
+                <td>
+                    @Html.TextBoxFor(model => model.BookName, new { @class = "form-control", id = "BookName", @Value = ViewBag.EditResult.BookName })
+                    @Html.ValidationMessageFor(model => model.BookName, "", new { @class = "text-danger" })
+                </td>
+            </tr>
+            <tr>
+                <th style="text-align: right;">*@Html.LabelFor(model => model.Author)</th>
+                <td>
+                    @Html.TextBoxFor(model => model.Author, new { @class = "form-control", id = "Author", @Value = ViewBag.EditResult.Author })
+                    @Html.ValidationMessageFor(model => model.Author, "", new { @class = "text-danger" })
+                </td>
+            </tr>
+            <tr>
+                <th style="text-align: right;">*@Html.LabelFor(model => model.Publisher)</th>
+                <td>
+                    @Html.TextBoxFor(model => model.Publisher, new { @class = "form-control", id = "Publisher", @Value = ViewBag.EditResult.Publisher })
+                    @Html.ValidationMessageFor(model => model.Publisher, "", new { @class = "text-danger" })
+                </td>
+            </tr>
+            <tr>
+                <th style="text-align: right;">*@Html.LabelFor(model => model.Introduction)</th>
+                <td>
+                    @Html.TextBoxFor(model => model.Introduction, new { @class = "form-control", id = "Introduction", @Value = ViewBag.EditResult.Introduction })
+                    @Html.ValidationMessageFor(model => model.Introduction, "", new { @class = "text-danger" })
+                </td>
+            </tr>
+            <tr>
+                <th style="text-align: right;">*@Html.LabelFor(model => model.BuyDate)</th>
+                <td>
+                    @Html.TextBoxFor(model => model.BuyDate, new { @class = "form-control", id = "Introduction", @Value = ViewBag.EditResult.BuyDate })
+                    @Html.ValidationMessageFor(model => model.BuyDate, "", new { @class = "text-danger" })
+                </td>
+            </tr>
+            <tr>
+                <th style="text-align: right;">*@Html.LabelFor(model => model.BookClassName)</th>
+                <td>
+                    @Html.DropDownListFor(model => model.BookClassId, (List<SelectListItem>)ViewBag.BookClassData, "請選擇")
+                    @Html.ValidationMessageFor(model => model.BookClassId, "", new { @class = "text-danger" })
+                </td>
+            
+            </tr>
+            <tr>
+                <th style="text-align: right;">*@Html.LabelFor(model => model.BookStatus)</th>
+                <td>
+                    @Html.DropDownListFor(model => model.BookStatusId, (List<SelectListItem>)ViewBag.StatusData, "請選擇", new { id = "BookStatusId" })
+                    @Html.ValidationMessageFor(model => model.BookStatusId, "", new { @class = "text-danger" })
+                </td>
+            </tr>
+            <tr id="tr_KeeperId">
+                <th style="text-align: right;">*@Html.LabelFor(model => model.Keeper)</th>
+                <td>@Html.DropDownListFor(model => model.KeeperId, (List<SelectListItem>)ViewBag.KeeperData, "請選擇", new { id = "KeeperId" })</td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <button class="DeleteBook" id="delete-btn" type="button" style="margin-left: 80%;">刪除</button>
+                    <input class="hidBookId" type="hidden" value='@ViewBag.EditResult.BookId' />
+                    <button id="gogogo" type="button">存檔</button>
+                    @Html.TextBoxFor(model => model.BookId, new { @class = "hidBookId", type = "hidden", @Value = ViewBag.EditResult.BookId })
+                </td>
+            </tr>
+        </table>
+    }
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#BookName').val(htmlencode($('#BookName').val()));
+        $('#Author').val(htmlencode($('#Author').val()));
+        $('#Publisher').val(htmlencode($('#Publisher').val()));
+        $('#Introduction').val(htmlencode($('#Introduction').val()));
+
+        $('.DeleteBook').click(function () {
+            if (confirm("確定要刪除該本書?")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Default/DeleteBook",
+                    data: "BookId=" + $(this).next().val(),
+                    dataType: "json",
+                    success: function () {
+                        alert("刪除成功! 返回主頁");
+                        location.href = "/Default/Index";
+                    }
+                });
+            }
+        });
+
+        $('#gogogo').click(function () {
+            if (confirm('確定要修改?')) {
+                var tmp = $('#BookStatusId').val();
+                if (tmp == "A" || tmp == "U" || tmp == "") {
+                    $('#KeeperId').val("");
+                }
+                $('#UpdateBook').submit();
+            }
+        })
+
+        $('#BookStatusId').change(function () {
+            var tmp = $('#BookStatusId').val();
+            if (tmp == "A" || tmp == "U" || tmp == "") {
+                $('#tr_KeeperId').hide();
+                $('#KeeperId').val("")
+            }
+            else
+            {
+                $('#tr_KeeperId').show();
+            }
+        });
+    });
+
+    function htmlencode(str) {
+        str = str.replace(/(<BR>)|(<P>)/g, '\n');
+        str = str.replace(/</g, '&lt;');
+        str = str.replace(/>/g, '&gt;');
+        return str;
+    }
+</script>

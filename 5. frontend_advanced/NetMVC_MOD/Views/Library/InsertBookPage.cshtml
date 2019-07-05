@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewBag.Title = "InsertBookPage";
+}
+
+<h2>新增書籍</h2>
+
+<div id="InsertTable">
+    <table class="table table-bordered table-striped">
+        <tr>
+            <td style="text-align: right"><span class="redstart">*</span>書名</td>
+            <td><input id="BookName" name="BookName" type="text" required /></td>
+        </tr>
+        <tr>
+            <td style="text-align: right"><span class="redstart">*</span>作者</td>
+            <td><input id="Author" name="Author" type="text" required /></td>
+        </tr>
+        <tr>
+            <td style="text-align: right"><span class="redstart">*</span>出版商</td>
+            <td><input id="Publisher" name="Publisher" type="text" required /></td>
+        </tr>
+        <tr>
+            <td style="text-align: right"><span class="redstart">*</span>內容簡介</td>
+            <td><textarea id="Introduction" name="Introduction" type="text" style="height: 200px; width: 500px;" required></textarea></td>
+        </tr>
+        <tr>
+            <td style="text-align: right"><span class="redstart">*</span>購書日期</td>
+            <td><input id="BuyDate" name="BuyDate" type="text" required /></td>
+        </tr>
+        <tr>
+            <td style="text-align: right"><span class="redstart">*</span>圖書類別</td>
+            <td><select id="BookClass" name="BookClass" required></select></td>
+        </tr>
+        <tr>
+            <td style="text-align: right"></td>
+            <td><button class="btn btn-default" id="save" type="button">存檔</button></td>
+        </tr>
+    </table>
+</div>
+
+<a href="/Library/Index">Back to List</a>
+
+<script>
+    var validator, validator2;
+
+    $(function () {
+        //buy date
+        $('#BuyDate').kendoDatePicker({ value: new Date(), format: "yyyy/MM/dd" });
+
+        // class
+        $("#BookClass").kendoDropDownList({
+            dataSource: {
+                transport: {
+                    read: {
+                        method: "post",
+                        url: "GetDropDownList",
+                        dataType: "json",
+                        data: {
+                            "type": "class",
+                            "mode": true
+                        }
+                    }
+
+                }
+            },
+            dataTextField: "Text",
+            dataValueField: "Value",
+            index: 0
+        });
+
+        validator = $("#InsertTable").kendoValidator().data("kendoValidator");
+        validator2 = $("#BuyDate").kendoValidator({
+            rules: {
+                dateValidation: function (e) {
+                    var currentDate = kendo.parseDate($(e).val(), "yyyy/MM/dd");
+                    if (!currentDate) {
+                        return false;
+                    }
+                    return true;
+                }
+            },
+            messages: {
+                dateValidation: "Invalid Date!"
+            }
+        }).data("kendoValidator");
+
+        $('#save').click(function () {
+            if (validator.validate() && validator2.validate()) {
+                if ($('#Introduction').val().length > 1000) {
+                    alert("內容簡介太多字了!");
+                    return;
+                }
+                var data = {
+                    "BookName": $('#BookName').val(),
+                    "Author": $('#Author').val(),
+                    "Publisher": $('#Publisher').val(),
+                    "Introduction": $('#Introduction').val(),
+                    "BuyDate": $('#BuyDate').val(),
+                    "BookClassId": $('#BookClass').val(),
+                    "CreateDate": kendo.toString(new Date(), "yyyy/MM/dd"),
+                    "ModDate": kendo.toString(new Date(), "yyyy/MM/dd")
+                };
+                $.ajax({
+                    method: "post",
+                    url: "InsertBook",
+                    dataType: "json",
+                    data: data,
+                    success: function (e) {
+                        if (e) {
+                            alert("新增成功!");
+                            location.href = "/Library/Index";
+                        }
+                        else {
+                            alert("欄位不能為空");
+                        }
+                    }
+                })
+            }
+        });
+    });
+</script>
+
+<style>
+    .redstart {
+        color: red;
+    }
+</style>

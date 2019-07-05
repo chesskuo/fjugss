@@ -1,0 +1,121 @@
+﻿@model NetMVC.Models.BookSearch
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>圖書維護</h2>
+
+@using (Html.BeginForm("Index", "Default", FormMethod.Post, new { id = "Search" }))
+{
+    <div class="form-horizontal">
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.BookName, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.BookName, new { @class = "form-control" })
+            </div>
+        </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.BookClassId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.BookClassId, (List<SelectListItem>)ViewBag.BookClassData, "請選擇", new { @class = "form-control" })
+            </div>
+        </div>
+
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.KeeperId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.KeeperId, (List<SelectListItem>)ViewBag.KeeperData, "請選擇", new { @class = "form-control" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.BookStatusId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.DropDownListFor(model => model.BookStatusId, (List<SelectListItem>)ViewBag.StatusData, "請選擇", new { @class = "form-control" })
+            </div>
+        </div>
+
+
+        <div class="form-group">
+            <div class="col-md-2">
+            </div>
+            <div class="col-md-10">
+                <input class="btn btn-primary"type="submit" value="查詢" />
+                <button class="btn btn-default" type="button">@Html.ActionLink("清除", "/")</button>
+                <button class="btn btn-default" type="button">@Html.ActionLink("新增", "InsertBook")</button>
+            </div>
+        </div>
+
+
+        @if (ViewBag.SearchResult != null)
+        {
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>圖書類別</th>
+                        <th>書名</th>
+                        <th>購書日期</th>
+                        <th>借閱狀態</th>
+                        <th>借閱人</th>
+                        <td colspan="3"></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in (List<NetMVC.Models.Book>)ViewBag.SearchResult)
+                    {
+                        <tr id='@item.BookId'>
+                            <td>@item.BookClassName</td>
+                            <td>@item.BookName</td>
+                            <td>@item.BuyDate</td>
+                            <td>@item.BookStatus</td>
+                            <td>@item.Keeper</td>
+                            <td>
+                                <form></form>
+                                @using (Html.BeginForm("Record", "Default", FormMethod.Post, new { id = "Record" }))
+                                {
+                                    <input type="hidden" id="BookId" name="BookId" value="@item.BookId" />
+                                    <button class="btn btn-default" type="submit">借閱紀錄</button>
+                                }
+                            </td>
+                            <td>
+                                @using (Html.BeginForm("EditBook", "Default", FormMethod.Post, new { id = "EditBook" }))
+                                {
+                                    <input type="hidden" id="BookId" name="BookId" value="@item.BookId" />
+                                    <button class="EditBook btn btn-default">編輯</button>
+                                }
+                            </td>
+                            <td>
+                                <button type="button" class="DeleteBook btn btn-danger">刪除</button>
+                                <input class="hidBookId" type="hidden" value='@item.BookId' />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.DeleteBook').click(function () {
+            var tr = $(this).closest('tr');
+            if (confirm("確定要刪除該本書?")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/Default/DeleteBook",
+                    data: "BookId=" + $(this).next().val(),
+                    dataType: "json",
+                    success: function (response) {
+                        $(tr).remove();
+                    }
+                });
+            }
+        });
+    })
+</script>
