@@ -61,7 +61,7 @@ namespace NetMVC_MOD.Models
                 conn.Close();
             }
 
-            if (mode == false) return this.MapDropDownListData(dt);
+            if (!mode) return this.MapDropDownListData(dt);
             else return this.MapEditKeeperData(dt);
         }
 
@@ -151,7 +151,7 @@ namespace NetMVC_MOD.Models
 		                            (BD.BOOK_CLASS_ID = @BookClassId OR '' = @BookClassId) AND
 		                            (ISNULL(BD.BOOK_KEEPER, '') = @KeeperId OR '' = @KeeperId) AND
 		                            (BD.BOOK_STATUS = @BookStatusId OR '' = @BookStatusId)
-                            ORDER BY BookId";
+                            ORDER BY BuyDate DESC";
 
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
             {
@@ -194,7 +194,7 @@ namespace NetMVC_MOD.Models
 
 
         // Record
-        public List<Models.BookRecord> GetRecordByCondtioin(int BookId)
+        public List<Models.BookRecord> GetRecordByCondtioin(int bookId)
         {
             DataTable dt = new DataTable();
             string sql = @"SELECT FORMAT(BLR.LEND_DATE, 'yyyy/MM/dd') AS LendDate,
@@ -210,7 +210,7 @@ namespace NetMVC_MOD.Models
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.Parameters.Add(new SqlParameter("@Id", BookId));
+                cmd.Parameters.Add(new SqlParameter("@Id", bookId));
                 SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
                 sqlAdapter.Fill(dt);
                 conn.Close();
@@ -239,7 +239,7 @@ namespace NetMVC_MOD.Models
 
 
         // Delect Book
-        public bool DeleteBook(int BookId)
+        public bool DeleteBook(int bookId)
         {
             DataTable dt = new DataTable();
             string sql = @"DELETE BOOK_DATA WHERE BOOK_ID = @BookId";
@@ -248,7 +248,7 @@ namespace NetMVC_MOD.Models
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.Parameters.Add(new SqlParameter("@BookId", BookId));
+                cmd.Parameters.Add(new SqlParameter("@BookId", bookId));
                 SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
                 sqlAdapter.Fill(dt);
                 conn.Close();
@@ -293,7 +293,7 @@ namespace NetMVC_MOD.Models
 
 
         // Edit Book
-        public Models.Book GetOriginData(int BookId)
+        public Models.Book GetOriginData(int bookId)
         {
             DataTable dt = new DataTable();
             string sql = @"SELECT BOOK_ID AS BookId,
@@ -312,7 +312,7 @@ namespace NetMVC_MOD.Models
             {
                 conn.Open();
                 SqlCommand cmd = new SqlCommand(sql, conn);
-                cmd.Parameters.Add(new SqlParameter("@BookId", BookId));
+                cmd.Parameters.Add(new SqlParameter("@BookId", bookId));
                 SqlDataAdapter sqlAdapter = new SqlDataAdapter(cmd);
                 sqlAdapter.Fill(dt);
                 conn.Close();

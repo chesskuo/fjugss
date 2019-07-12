@@ -8,7 +8,7 @@ namespace NetMVC_MOD.Controllers
 {
     public class LibraryController : Controller
     {
-        Models.BookService bookService = new Models.BookService();
+        readonly Models.BookService bookService = new Models.BookService();
 
         // GET: Library
         public ActionResult Index()
@@ -55,17 +55,17 @@ namespace NetMVC_MOD.Controllers
 
 
         [HttpPost]
-        public JsonResult GetRecord(int BookId)
+        public JsonResult GetRecord(int bookId)
         {
-            return Json(this.bookService.GetRecordByCondtioin(BookId));
+            return Json(this.bookService.GetRecordByCondtioin(bookId));
         }
 
 
 
         [HttpPost]
-        public JsonResult DeleteBook(int BookId)
+        public JsonResult DeleteBook(int bookId)
         {
-            return Json(this.bookService.DeleteBook(BookId));
+            return Json(this.bookService.DeleteBook(bookId));
         }
 
 
@@ -92,16 +92,16 @@ namespace NetMVC_MOD.Controllers
 
         // Edit Book
         [HttpPost]
-        public ActionResult EditBookPage(int BookId)
+        public ActionResult EditBookPage(int bookId)
         {
-            ViewData["BookId"] = BookId;
+            ViewData["BookId"] = bookId;
             return View();
         }
 
         [HttpPost]
-        public JsonResult EditBookInfo(int BookId)
+        public JsonResult EditBookInfo(int bookId)
         {
-            return Json(this.bookService.GetOriginData(BookId));
+            return Json(this.bookService.GetOriginData(bookId));
         }
 
         [HttpPost]
