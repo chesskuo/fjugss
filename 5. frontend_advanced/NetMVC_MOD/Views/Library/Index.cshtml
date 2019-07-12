@@ -148,7 +148,6 @@
                 "KeeperId": $('#BookKeeper').val(),
                 "BookStatusId": $('#BookStatus').val()
             };
-            console.log(data);
             $("#search-grid").kendoGrid({
                 dataSource: {
                     transport: {
@@ -291,6 +290,7 @@
         {
             var book = this.dataItem($(e.currentTarget).closest("tr"));
 
+            debugger;
             if (book.BookStatusId == "B" || book.BookStatusId == "C")
             {
                 alert("該本書借出中無法刪除!");
