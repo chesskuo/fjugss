@@ -297,15 +297,17 @@ namespace NetMVC_MOD.Models
         {
             DataTable dt = new DataTable();
             string sql = @"SELECT BOOK_ID AS BookId,
-                                    BOOK_NAME AS BookName,
+		                            BOOK_NAME AS BookName,
 		                            BOOK_AUTHOR AS Author,
 		                            BOOK_PUBLISHER AS Publisher,
 		                            BOOK_NOTE AS Introduction,
 		                            FORMAT(BOOK_BOUGHT_DATE, 'yyyy/MM/dd') AS BuyDate,
-		                            BOOK_CLASS_ID AS BookClassId,
+		                            BC.BOOK_CLASS_ID AS BookClassId,
+		                            Book_Class_Name AS BookClassName,
 		                            BOOK_STATUS AS BookStatusId,
 		                            BOOK_KEEPER AS KeeperId
-                            FROM BOOK_DATA
+                            FROM BOOK_DATA AS BD
+                            INNER JOIN BOOK_CLASS AS BC ON BD.BOOK_CLASS_ID = BC.BOOK_CLASS_ID
                             WHERE BOOK_ID = @BookId";
 
             using (SqlConnection conn = new SqlConnection(this.GetDBConnectionString()))
@@ -332,6 +334,7 @@ namespace NetMVC_MOD.Models
             result.Introduction = dt.Rows[0]["Introduction"].ToString();
             result.BuyDate = dt.Rows[0]["BuyDate"].ToString();
             result.BookClassId = dt.Rows[0]["BookClassId"].ToString();
+            result.BookClassName = dt.Rows[0]["BookClassName"].ToString();
             result.BookStatusId = dt.Rows[0]["BookStatusId"].ToString();
             result.KeeperId = dt.Rows[0]["KeeperId"].ToString();
 
